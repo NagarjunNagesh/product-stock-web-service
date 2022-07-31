@@ -3,9 +3,8 @@ package usecase
 import (
 	"context"
 	"product-stock-web-service/domain"
+	"product-stock-web-service/utils"
 	"time"
-
-	"github.com/google/uuid"
 )
 
 type productUsecase struct {
@@ -21,18 +20,50 @@ func NewProductUsecase(a domain.ProductRepository, timeout time.Duration) domain
 	}
 }
 
-func (a *productUsecase) Store(context.Context, *domain.Product) error {
-	return nil
+func (a *productUsecase) Store(ctx context.Context, product *domain.Product) error {
+	ctx, cancel := context.WithTimeout(ctx, a.contextTimeout)
+	defer cancel()
+
+	// TODO sql injection attack security chck
+	// TODO check if product already exists
+
+	if err := utils.ValidateStruct(ctx, product); err != nil {
+		return domain.ErrBadParamInput
+	}
+
+	err := a.productRepo.Store(ctx, product)
+	return err
 }
 
 func (a *productUsecase) Fetch(ctx context.Context) ([]*domain.Product, error) {
-	return nil, nil
+	ctx, cancel := context.WithTimeout(ctx, a.contextTimeout)
+	defer cancel()
+
+	// TODO introduce Pagination (limit and offset) to enable query
+
+	products, err := a.productRepo.Fetch(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return products, nil
 }
 
 func (a *productUsecase) Update(ctx context.Context, product *domain.Product) error {
-	return nil
+	ctx, cancel := context.WithTimeout(ctx, a.contextTimeout)
+	defer cancel()
+
+	// TODO sql injection attack security chck
+
+	return a.productRepo.Update(ctx, product)
 }
 
-func (a *productUsecase) Delete(ctx context.Context, id *uuid.UUID) error {
-	return nil
+func (a *productUsecase) Delete(ctx context.Context, id *int64) error {
+	ctx, cancel := context.WithTimeout(ctx, a.contextTimeout)
+	defer cancel()
+
+	// Check if product exists
+	// check if authorized
+
+	return a.productRepo.Delete(ctx, id)
 }

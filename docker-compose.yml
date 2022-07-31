@@ -1,16 +1,9 @@
 version: '3.4'
 
 services:
-  productstockwebservice:
-    image: productstockwebservice
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    ports:
-      - 8080:8080
 
   mysql:
-    image: mysql:5.7 
+    image: mysql:5.7
     container_name: products_mysql
     command: mysqld --user=root
     volumes:
@@ -23,6 +16,6 @@ services:
       - MYSQL_PASSWORD=password
       - MYSQL_ROOT_PASSWORD=root
     healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       timeout: 5s
       retries: 10

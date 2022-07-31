@@ -59,12 +59,12 @@ func initializeMySql() (*echo.Echo, domain.ProductRepository) {
 		log.Fatal(err)
 	}
 
-	defer func() {
+	/*defer func() {
 		err := dbConn.Close()
 		if err != nil {
 			log.Fatal(err)
 		}
-	}()
+	}()*/
 
 	e := echo.New()
 	ar := mysql.NewProductRepository(dbConn)

@@ -3,8 +3,8 @@ package middleware
 import (
 	"net/http"
 	"product-stock-web-service/domain"
+	"strconv"
 
-	"github.com/google/uuid"
 	"github.com/labstack/echo"
 )
 
@@ -23,9 +23,9 @@ func NewProductHandler(e *echo.Echo, us domain.ProductUsecase) {
 	handler := &ProductHandler{
 		ProductUseCase: us,
 	}
-	e.GET("/products", handler.Fetch)
-	e.POST("/products", handler.Store)
-	e.GET("/products/:id", handler.Update)
+	e.POST("/products", handler.Fetch)
+	e.PUT("/products", handler.Store)
+	e.PATCH("/products", handler.Update)
 	e.DELETE("/products/:id", handler.Delete)
 }
 
@@ -87,11 +87,12 @@ func (a *ProductHandler) Update(c echo.Context) (err error) {
 
 // Delete will delete product by given param
 func (a *ProductHandler) Delete(c echo.Context) error {
-	id, err := uuid.Parse(c.Param("id"))
+	idP, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return c.JSON(http.StatusNotFound, domain.ErrNotFound.Error())
 	}
 
+	id := int64(idP)
 	ctx := c.Request().Context()
 
 	err = a.ProductUseCase.Delete(ctx, &id)
