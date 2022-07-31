@@ -14,7 +14,7 @@ type Product struct {
 }
 
 type ProductUsecase interface {
-	Store(context.Context, *Product) error
+	Store(ctx context.Context, product *Product) error
 	Fetch(ctx context.Context) ([]*Product, error)
 	Update(ctx context.Context, product *Product) error
 	Delete(ctx context.Context, id *int64) error
